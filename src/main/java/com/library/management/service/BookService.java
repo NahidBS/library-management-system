@@ -1,0 +1,259 @@
+package com.library.management.service;
+
+import com.library.management.dto.request.BookCreateRequest;
+import com.library.management.dto.request.BookUpdateRequest;
+import com.library.management.dto.response.BookResponse;
+import com.library.management.entity.Book;
+import com.library.management.entity.Category;
+import com.library.management.exception.BusinessLogicException;
+import com.library.management.exception.ResourceAlreadyExistsException;
+import com.library.management.exception.ResourceNotFoundException;
+import com.library.management.mapper.BookMapper;
+import com.library.management.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class BookService {
+    
+    private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
+    private final CategoryService categoryService;
+    
+    @Transactional(readOnly = true)
+    public Page<BookResponse> getAllBooks(Long categoryId, Boolean available, Pageable pageable) {
+        Page<Book> books;
+        
+        if (categoryId != null && available != null) {
+            if (available) {
+                books = bookRepository.findByCategoryIdAndAvailableCopiesGreaterThan(categoryId, 0, pageable);
+            } else {
+                books = bookRepository.findByCategoryId(categoryId, pageable);
+            }
+        } else if (categoryId != null) {
+            books = bookRepository.findByCategoryId(categoryId, pageable);
+        } else if (available != null && available) {
+            books = bookRepository.findByAvailableCopiesGreaterThan(0, pageable);
+        } else {
+            books = bookRepository.findAll(pageable);
+        }
+        
+        return books.map(bookMapper::toResponse);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<BookResponse> searchBooks(String query, Pageable pageable) {
+        Page<Book> books = bookRepository.findByNameContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrIsbnContainingIgnoreCase(
+                query, query, query, pageable);
+        return books.map(bookMapper::toResponse);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<BookResponse> getBooksByCategory(Long categoryId, Pageable pageable) {
+        // Verify category exists
+        categoryService.getCategoryById(categoryId);
+        Page<Book> books = bookRepository.findByCategoryId(categoryId, pageable);
+        return books.map(bookMapper::toResponse);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<BookResponse> getAvailableBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findByAvailableCopiesGreaterThan(0, pageable);
+        return books.map(bookMapper::toResponse);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> getTrendingBooks(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        Page<Book> books = bookRepository.findTrendingBooks(pageable);
+        return bookMapper.toResponseList(books.getContent());
+    }
+    
+    @Transactional
+    public BookResponse updateBookAvailability(Long id, int availableCopies) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        
+        if (availableCopies < 0) {
+            throw new BusinessLogicException("Available copies cannot be negative");
+        }
+        
+        if (availableCopies > book.getTotalCopies()) {
+            throw new BusinessLogicException("Available copies cannot exceed total copies");
+        }
+        
+        book.setAvailableCopies(availableCopies);
+        Book updatedBook = bookRepository.save(book);
+        return bookMapper.toResponse(updatedBook);
+    }
+    
+    @Transactional(readOnly = true)
+    public BookResponse getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        return bookMapper.toResponse(book);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> searchBooksByName(String name) {
+        List<Book> books = bookRepository.findByNameContainingIgnoreCase(name);
+        return bookMapper.toResponseList(books);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> searchBooksByAuthor(String author) {
+        List<Book> books = bookRepository.findByAuthorContainingIgnoreCase(author);
+        return bookMapper.toResponseList(books);
+    }
+    
+
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> getAvailableBooks() {
+        List<Book> books = bookRepository.findAvailableBooks();
+        return bookMapper.toResponseList(books);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> getPopularBooks(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Book> books = bookRepository.findPopularBooks(pageable);
+        return bookMapper.toResponseList(books);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> getNewBooks(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Book> books = bookRepository.findNewBooks(pageable);
+        return bookMapper.toResponseList(books);
+    }
+    
+    @Transactional
+    public BookResponse createBook(BookCreateRequest request) {
+        // Check if book with same ISBN already exists
+        if (request.getIsbn() != null && bookRepository.findByIsbn(request.getIsbn()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Book", "ISBN", request.getIsbn());
+        }
+        
+        Category category = categoryService.getCategoryEntityById(request.getCategoryId());
+        
+        Book book = bookMapper.toEntity(request, category);
+        
+        // Validate business rules
+        validateBookBusinessRules(book);
+        
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toResponse(savedBook);
+    }
+    
+    @Transactional
+    public BookResponse updateBook(Long id, BookUpdateRequest request) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        
+        // Check if new ISBN conflicts with existing book
+        if (request.getIsbn() != null && !request.getIsbn().equals(book.getIsbn())) {
+            if (bookRepository.findByIsbn(request.getIsbn()).isPresent()) {
+                throw new ResourceAlreadyExistsException("Book", "ISBN", request.getIsbn());
+            }
+        }
+        
+        Category category = null;
+        if (request.getCategoryId() != null) {
+            category = categoryService.getCategoryEntityById(request.getCategoryId());
+        }
+        
+        bookMapper.updateEntity(book, request, category);
+        
+        // Validate business rules
+        validateBookBusinessRules(book);
+        
+        Book updatedBook = bookRepository.save(book);
+        return bookMapper.toResponse(updatedBook);
+    }
+    
+    @Transactional
+    public void deleteBook(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        
+        // Check if book has active borrows
+        if (book.getAvailableCopies() < book.getTotalCopies()) {
+            throw new BusinessLogicException(
+                String.format("Cannot delete book '%s' because it has active borrows", book.getName()));
+        }
+        
+        bookRepository.delete(book);
+    }
+    
+    @Transactional
+    public void decreaseAvailableCopies(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
+        
+        if (book.getAvailableCopies() <= 0) {
+            throw new BusinessLogicException("No available copies to borrow");
+        }
+        
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        bookRepository.save(book);
+    }
+    
+    @Transactional
+    public void increaseAvailableCopies(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
+        
+        if (book.getAvailableCopies() >= book.getTotalCopies()) {
+            throw new BusinessLogicException("Cannot increase available copies beyond total copies");
+        }
+        
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
+        bookRepository.save(book);
+    }
+    
+    // Helper method for internal use by other services
+    @Transactional(readOnly = true)
+    public Book getBookEntityById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+    }
+    
+    private void validateBookBusinessRules(Book book) {
+        if (book.getAvailableCopies() > book.getTotalCopies()) {
+            throw new BusinessLogicException("Available copies cannot exceed total copies");
+        }
+        
+        if (book.getTotalCopies() <= 0) {
+            throw new BusinessLogicException("Total copies must be greater than 0");
+        }
+        
+        if (book.getAvailableCopies() < 0) {
+            throw new BusinessLogicException("Available copies cannot be negative");
+        }
+    }
+    
+    @Transactional(readOnly = true)
+    public Boolean isBookAvailable(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+        return book.getAvailableCopies() > 0;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<BookResponse> getRecommendedBooks(int limit) {
+        // For now, return trending books as recommended books
+        // In a real implementation, this could be based on user preferences, ratings, etc.
+        Pageable pageable = PageRequest.of(0, limit);
+        Page<Book> books = bookRepository.findTrendingBooks(pageable);
+        return bookMapper.toResponseList(books.getContent());
+    }
+}
+
