@@ -26,6 +26,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final CategoryService categoryService;
+    private final NotificationService notificationService;
     
     @Transactional(readOnly = true)
     public Page<BookResponse> getAllBooks(Long categoryId, Boolean available, Pageable pageable) {
@@ -150,6 +151,14 @@ public class BookService {
         validateBookBusinessRules(book);
         
         Book savedBook = bookRepository.save(book);
+
+        // Send notification to the admin about the new book
+//        String adminEmail = "mfbinahid@gmail.com";  // Set your admin email here
+//        String message = "A new book titled '" + savedBook.getName() + "' has been added to the library.";
+//        notificationService.createNotification(message, adminEmail);
+        notificationService.notifyNewBook("mfbinahid@gmail.com", savedBook.getName());
+
+        // Return the saved book response
         return bookMapper.toResponse(savedBook);
     }
     
