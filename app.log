@@ -2797,3 +2797,303 @@ Caused by: org.postgresql.util.PSQLException: FATAL: database "library_managemen
 2025-08-07 18:27:26 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-08-07 18:27:26 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-08-07 18:27:26 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-08-07 18:38:14 [main] INFO  c.l.m.LibraryManagementApplication - Starting LibraryManagementApplication using Java 24.0.2 with PID 10060 (C:\Users\c6-std14\Desktop\Nahid\LMS\Backend\library-management-system\target\classes started by c6-std14 in C:\Users\c6-std14\Desktop\Nahid\LMS\Backend\library-management-system)
+2025-08-07 18:38:14 [main] DEBUG c.l.m.LibraryManagementApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+2025-08-07 18:38:14 [main] INFO  c.l.m.LibraryManagementApplication - No active profile set, falling back to 1 default profile: "default"
+2025-08-07 18:38:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-07 18:38:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 175 ms. Found 9 JPA repository interfaces.
+2025-08-07 18:38:18 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-07 18:38:18 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-07 18:38:18 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.43]
+2025-08-07 18:38:18 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-07 18:38:18 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4089 ms
+2025-08-07 18:38:18 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-07 18:38:18 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-08-07 18:38:19 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-07 18:38:19 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-07 18:38:19 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-07 18:38:20 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7eefaca0
+2025-08-07 18:38:20 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-07 18:38:20 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-07 18:38:20 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-07 18:38:22 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    set client_min_messages = WARNING
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       drop constraint if exists FKm827phjjfy5m6q8vsjmi1gybv
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       drop constraint if exists FKeyog2oic85xg7hsu2je2lx3s6
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists books 
+       drop constraint if exists FKleqa3hhc0uhfvurq6mil47xk0
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists borrows 
+       drop constraint if exists FK8789wjikihu9ocbhamiw789y9
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists borrows 
+       drop constraint if exists FKd64ttskt7j96v1nqtpry3pp2a
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists donation_requests 
+       drop constraint if exists FK42i2vj0hduc4jwntg1ute8v4g
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       drop constraint if exists FK6a9k6xvev80se5rreqvuqr7f9
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       drop constraint if exists FKcgy7qjc1r99dp117y9en6lxye
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists admin_settings cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists bookings cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists books cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists borrows cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists categories cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists donation_requests cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists notifications cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists reviews cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table admin_settings (
+        booking_days_limit integer,
+        borrow_book_limit integer,
+        borrow_day_limit integer,
+        borrow_extend_limit integer,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table bookings (
+        booking_date date not null,
+        expected_available_date date not null,
+        book_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null,
+        status varchar(255) not null check (status in ('PENDING','FULFILLED','CANCELLED','EXPIRED')),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table books (
+        available_copies integer not null,
+        publication_year integer,
+        total_copies integer not null,
+        category_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        about TEXT,
+        author varchar(255) not null,
+        format varchar(255) not null check (format in ('HARD_COPY','E_BOOK')),
+        isbn varchar(255) unique,
+        name varchar(255) not null,
+        short_details varchar(255),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table borrows (
+        borrow_date date not null,
+        due_date date not null,
+        extension_count integer,
+        return_date date,
+        book_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null,
+        status varchar(255) not null check (status in ('ACTIVE','RETURNED','OVERDUE')),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table categories (
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        description varchar(255),
+        name varchar(255) not null unique,
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table donation_requests (
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null,
+        admin_notes TEXT,
+        author varchar(255) not null,
+        book_title varchar(255) not null,
+        description TEXT,
+        isbn varchar(255),
+        status varchar(255) not null check (status in ('PENDING','APPROVED','REJECTED','RECEIVED')),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table notifications (
+        read boolean not null,
+        id bigint generated by default as identity,
+        timestamp timestamp(6),
+        message varchar(255),
+        recipient varchar(255),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table reviews (
+        rating integer not null,
+        book_id bigint not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null,
+        comment TEXT,
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    create table users (
+        date_of_birth date,
+        is_active boolean not null,
+        created_at timestamp(6),
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        address varchar(255),
+        email varchar(255) not null unique,
+        moodle_id varchar(255) not null unique,
+        name varchar(255) not null,
+        role varchar(255) not null check (role in ('ADMIN','USER','MEMBER','LIBRARIAN')),
+        primary key (id)
+    )
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       add constraint FKm827phjjfy5m6q8vsjmi1gybv 
+       foreign key (book_id) 
+       references books
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       add constraint FKeyog2oic85xg7hsu2je2lx3s6 
+       foreign key (user_id) 
+       references users
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists books 
+       add constraint FKleqa3hhc0uhfvurq6mil47xk0 
+       foreign key (category_id) 
+       references categories
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists borrows 
+       add constraint FK8789wjikihu9ocbhamiw789y9 
+       foreign key (book_id) 
+       references books
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists borrows 
+       add constraint FKd64ttskt7j96v1nqtpry3pp2a 
+       foreign key (user_id) 
+       references users
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists donation_requests 
+       add constraint FK42i2vj0hduc4jwntg1ute8v4g 
+       foreign key (user_id) 
+       references users
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       add constraint FK6a9k6xvev80se5rreqvuqr7f9 
+       foreign key (book_id) 
+       references books
+2025-08-07 18:38:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       add constraint FKcgy7qjc1r99dp117y9en6lxye 
+       foreign key (user_id) 
+       references users
+2025-08-07 18:38:22 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-07 18:38:23 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-07 18:38:26 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+2025-08-07 18:38:26 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-07 18:38:27 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-07 18:38:27 [main] INFO  c.l.m.LibraryManagementApplication - Started LibraryManagementApplication in 14.49 seconds (process running for 15.244)
+2025-08-07 18:38:36 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-07 18:38:36 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-07 18:38:36 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-08-07 18:38:42 [http-nio-8080-exec-4] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 6120 ms
+2025-08-07 18:38:51 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        b1_0.id,
+        b1_0.about,
+        b1_0.author,
+        b1_0.available_copies,
+        b1_0.category_id,
+        b1_0.created_at,
+        b1_0.format,
+        b1_0.isbn,
+        b1_0.name,
+        b1_0.publication_year,
+        b1_0.short_details,
+        b1_0.total_copies,
+        b1_0.updated_at 
+    from
+        books b1_0 
+    where
+        b1_0.isbn=?
+2025-08-07 18:38:52 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id,
+        c1_0.created_at,
+        c1_0.description,
+        c1_0.name,
+        c1_0.updated_at 
+    from
+        categories c1_0 
+    where
+        c1_0.id=?
+2025-08-07 18:38:52 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        books
+        (about, author, available_copies, category_id, created_at, format, isbn, name, publication_year, short_details, total_copies, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2025-08-07 18:38:52 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        notifications
+        (message, read, recipient, timestamp) 
+    values
+        (?, ?, ?, ?)
+2025-08-07 18:39:07 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        b1_0.category_id,
+        b1_0.id,
+        b1_0.about,
+        b1_0.author,
+        b1_0.available_copies,
+        b1_0.created_at,
+        b1_0.format,
+        b1_0.isbn,
+        b1_0.name,
+        b1_0.publication_year,
+        b1_0.short_details,
+        b1_0.total_copies,
+        b1_0.updated_at 
+    from
+        books b1_0 
+    where
+        b1_0.category_id=?
+2025-08-07 18:39:36 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-07 18:39:36 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-07 18:39:36 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-07 18:39:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-07 18:39:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

@@ -13,6 +13,11 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private  EmailNotificationService emailNotificationService;
+
+    private static final String ADMIN_EMAIL = "mfbinahid@gmail.com"; // Replace with real admin email
+
     public void createNotification(String message, String recipient){
         Notification notification = new Notification();
         notification.setMessage(message);
@@ -26,6 +31,11 @@ public class NotificationService {
     public void notifyNewBook(String recipient, String bookTitle) {
         String message = "A new book titled '" + bookTitle + "' is now available in the library!";
         createNotification(message, recipient);
+
+        // Email the admin
+        String subject = "New Book Added: " + bookTitle;
+        String body = "A new book titled '" + bookTitle + "' was just added by the admin.";
+        emailNotificationService.sendEmail(ADMIN_EMAIL, subject, body);
     }
 
     public List<Notification> getUnreadNotifications(String recipient) {
