@@ -16,7 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
@@ -27,7 +31,130 @@ public class BookService {
     private final BookMapper bookMapper;
     private final CategoryService categoryService;
     private final NotificationService notificationService;
-    
+
+    private final Path rootUploadDir = Paths.get("uploads");
+
+    private String cleanUrlFilename(String url) {
+        if (url == null) return null;
+
+        int lastSlash = url.lastIndexOf('/');
+        if (lastSlash == -1 || lastSlash == url.length() - 1) {
+            return url; // malformed URL or no filename
+        }
+
+        String path = url.substring(0, lastSlash + 1); // e.g. "/files/covers/"
+        String filename = url.substring(lastSlash + 1); // e.g. "1754998492625_GGatsby.jpg"
+
+        int underscoreIndex = filename.indexOf('_');
+        if (underscoreIndex == -1) {
+            return url; // no prefix to remove
+        }
+
+        String cleanedFilename = filename.substring(underscoreIndex + 1); // "GGatsby.jpg"
+        return path + cleanedFilename;
+    }
+
+
+    //create book with file
+    @Transactional
+    public BookResponse createBookWithFiles(BookCreateRequest request, MultipartFile bookCover,
+                                            MultipartFile pdfFile, MultipartFile audioFile) {
+
+        if (request.getIsbn() != null && bookRepository.findByIsbn(request.getIsbn()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Book", "ISBN", request.getIsbn());
+        }
+
+        Category category = categoryService.getCategoryEntityById(request.getCategoryId());
+
+        // Save files and get URLs
+        String bookCoverUrl = null;
+        String pdfFileUrl = null;
+        String audioFileUrl = null;
+
+        if (bookCover != null && !bookCover.isEmpty()) {
+            bookCoverUrl = saveFile(bookCover, "covers");
+        }
+        if (pdfFile != null && !pdfFile.isEmpty()) {
+            pdfFileUrl = saveFile(pdfFile, "pdfs");
+        }
+        if (audioFile != null && !audioFile.isEmpty()) {
+            audioFileUrl = saveFile(audioFile, "audio");
+        }
+
+        // Convert DTO to entity
+        Book book = bookMapper.toEntity(request, category);
+
+        // Set file URLs directly on entity
+        book.setBookCoverUrl(bookCoverUrl);
+        book.setPdfFileUrl(pdfFileUrl);
+        book.setAudioFileUrl(audioFileUrl);
+
+
+
+        // Validate rules and save
+        validateBookBusinessRules(book);
+
+
+//        // Manually set URLs in DTO before mapping to entity
+//        request.setBook_coverUrl(bookCoverUrl);
+//        request.setPdf_fileUrl(pdfFileUrl);
+//        request.setAudio_fileUrl(audioFileUrl);
+
+        Book savedBook = bookRepository.save(book);
+        // Clean URLs before returning response
+        String cleanBookCoverUrl = cleanUrlFilename(savedBook.getBookCoverUrl());
+        String cleanPdfFileUrl = cleanUrlFilename(savedBook.getPdfFileUrl());
+        String cleanAudioFileUrl = cleanUrlFilename(savedBook.getAudioFileUrl());
+
+// Create response DTO from entity
+        BookResponse response = bookMapper.toResponse(savedBook);
+
+// Override URLs in response DTO with cleaned versions
+        response.setBookCoverUrl(cleanBookCoverUrl);
+        response.setPdfFileUrl(cleanPdfFileUrl);
+        response.setAudioFileUrl(cleanAudioFileUrl);
+
+        return response;
+
+//        return bookMapper.toResponse(savedBook);
+    }
+    private String saveFile(MultipartFile file, String folder) {
+        try {
+            Path uploadPath = rootUploadDir.resolve(folder);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            String originalFilename = file.getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + originalFilename;
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Return relative URL/path for client usage
+            return "/files/" + folder + "/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file " + file.getOriginalFilename(), e);
+        }
+    }
+
+    private void validateBookBusinessRules(Book book) {
+        if (book.getAvailableCopies() > book.getTotalCopies()) {
+            throw new BusinessLogicException("Available copies cannot exceed total copies");
+        }
+        if (book.getTotalCopies() <= 0) {
+            throw new BusinessLogicException("Total copies must be greater than 0");
+        }
+        if (book.getAvailableCopies() < 0) {
+            throw new BusinessLogicException("Available copies cannot be negative");
+        }
+    }
+
+
+
+
+
+
+
+
     @Transactional(readOnly = true)
     public Page<BookResponse> getAllBooks(Long categoryId, Boolean available, Pageable pageable) {
         Page<Book> books;
@@ -235,19 +362,7 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
     }
     
-    private void validateBookBusinessRules(Book book) {
-        if (book.getAvailableCopies() > book.getTotalCopies()) {
-            throw new BusinessLogicException("Available copies cannot exceed total copies");
-        }
-        
-        if (book.getTotalCopies() <= 0) {
-            throw new BusinessLogicException("Total copies must be greater than 0");
-        }
-        
-        if (book.getAvailableCopies() < 0) {
-            throw new BusinessLogicException("Available copies cannot be negative");
-        }
-    }
+
     
     @Transactional(readOnly = true)
     public Boolean isBookAvailable(Long id) {

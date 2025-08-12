@@ -52,5 +52,19 @@ public class BookUpdateRequest {
     @Max(value = 2100, message = "Publication year must not exceed 2100")
     @Schema(description = "Publication year of the book", example = "1925")
     private Integer publicationYear;
+
+//    private String book_cover;
+//    private String book_coverUrl;
+//
+//    private String pdf_file;
+//    private String pdf_fileUrl;
+//
+//    private String audio_file;
+//    private String audio_fileUrl;
+    private String bookCoverUrl;
+
+    private String pdfFileUrl;
+
+    private String audioFileUrl;
 }
 

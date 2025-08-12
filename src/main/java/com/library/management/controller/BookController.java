@@ -1,11 +1,14 @@
 package com.library.management.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.management.dto.request.BookCreateRequest;
 import com.library.management.dto.request.BookUpdateRequest;
 import com.library.management.dto.response.BookResponse;
 import com.library.management.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,9 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,6 +32,37 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final ObjectMapper objectMapper;  // Inject ObjectMapper
+
+
+    @PostMapping(value = "/create/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Add a new book with optional files", description = "Adds a new book with cover, pdf, and audio uploads")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Book created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "409", description = "Book with ISBN already exists")
+    })
+    public ResponseEntity<BookResponse> createBookWithFiles(
+//            @RequestPart("book") @Valid BookCreateRequest request,
+            @Parameter(description = "Book JSON data", required = true,
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = BookCreateRequest.class))
+            )
+            @RequestPart("book") String bookJson,   // Receive JSON as string
+            @RequestPart(value = "bookCover", required = false) MultipartFile bookCover,
+            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile,
+            @RequestPart(value = "audioFile", required = false) MultipartFile audioFile)  throws IOException {
+
+//        // Deserialize JSON string to DTO
+//        BookCreateRequest request = objectMapper.readValue(bookJson, BookCreateRequest.class);
+//        BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
+        // This is where request is declared and initialized:
+        BookCreateRequest request = objectMapper.readValue(bookJson, BookCreateRequest.class);
+
+        // Use request only here
+        BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     @PostMapping("/create")
     @Operation(summary = "Add a new book", description = "Adds a new book to the library (Admin only)")

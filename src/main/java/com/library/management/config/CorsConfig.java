@@ -33,6 +33,12 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods("GET")
                 .allowedHeaders("*")
                 .allowCredentials(true);
+
+//        registry.addMapping("/api/**")
+//                .allowedOrigins("http://localhost:5173") // your React dev server
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(true);
     }
 
     @Bean

@@ -59,6 +59,9 @@ public class BookMapper {
                 .isAvailable(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
                 .createdAt(book.getCreatedAt())
                 .updatedAt(book.getUpdatedAt())
+                .bookCoverUrl(book.getBookCoverUrl())
+                .pdfFileUrl(book.getPdfFileUrl())
+                .audioFileUrl(book.getAudioFileUrl())
                 .build();
     }
     
@@ -84,6 +87,9 @@ public class BookMapper {
                 .isAvailable(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
                 .createdAt(book.getCreatedAt())
                 .updatedAt(book.getUpdatedAt())
+                .bookCoverUrl(book.getBookCoverUrl())
+                .pdfFileUrl(book.getPdfFileUrl())
+                .audioFileUrl(book.getAudioFileUrl())
                 .build();
     }
     

@@ -63,5 +63,13 @@ public class BookResponse {
     
     @Schema(description = "Last update timestamp")
     private LocalDateTime updatedAt;
+//
+//    private String book_cover;
+//    private String pdf_file;
+//    private String audio_file;
+
+    private String bookCoverUrl;
+    private String pdfFileUrl;
+    private String audioFileUrl;
 }
 

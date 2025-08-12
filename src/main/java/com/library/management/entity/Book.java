@@ -52,6 +52,18 @@ public class Book {
     private String isbn;
     
     private Integer publicationYear;
+
+//    private String book_cover;
+//    private String pdf_file;
+//    private String audio_file;
+    @Column(name = "book_cover_url")
+    private String bookCoverUrl;
+
+    @Column(name = "pdf_file_url")
+    private String pdfFileUrl;
+
+    @Column(name = "audio_file_url")
+    private String audioFileUrl;
     
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Borrow> borrows;
@@ -70,7 +82,18 @@ public class Book {
     private LocalDateTime updatedAt;
     
     public enum BookFormat {
-        HARD_COPY, E_BOOK
+        HARD_COPY, E_BOOK, AUDIO_BOOK;
     }
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
 }
 
