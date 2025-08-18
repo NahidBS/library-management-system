@@ -35,34 +35,117 @@ public class BookController {
     private final ObjectMapper objectMapper;  // Inject ObjectMapper
 
 
-    @PostMapping(value = "/create/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Add a new book with optional files", description = "Adds a new book with cover, pdf, and audio uploads")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Book created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "Category not found"),
-            @ApiResponse(responseCode = "409", description = "Book with ISBN already exists")
-    })
-    public ResponseEntity<BookResponse> createBookWithFiles(
-//            @RequestPart("book") @Valid BookCreateRequest request,
-            @Parameter(description = "Book JSON data", required = true,
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = BookCreateRequest.class))
-            )
-            @RequestPart("book") String bookJson,   // Receive JSON as string
-            @RequestPart(value = "bookCover", required = false) MultipartFile bookCover,
-            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile,
-            @RequestPart(value = "audioFile", required = false) MultipartFile audioFile)  throws IOException {
-
-//        // Deserialize JSON string to DTO
+//    @PostMapping(value = "/create/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(summary = "Add a new book with optional files", description = "Adds a new book with cover, pdf, and audio uploads")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Book created successfully"),
+//            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+//            @ApiResponse(responseCode = "404", description = "Category not found"),
+//            @ApiResponse(responseCode = "409", description = "Book with ISBN already exists")
+//    })
+//    public ResponseEntity<BookResponse> createBookWithFiles(
+////            @RequestPart("book") @Valid BookCreateRequest request,
+//            @Parameter(description = "Book JSON data", required = true,
+//                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = BookCreateRequest.class))
+//            )
+//            @RequestPart("book") String bookJson,   // Receive JSON as string
+//            @RequestPart(value = "bookCover", required = false) MultipartFile bookCover,
+//            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile,
+//            @RequestPart(value = "audioFile", required = false) MultipartFile audioFile)  throws IOException {
+//
+//       // This is where request is declared and initialized:
 //        BookCreateRequest request = objectMapper.readValue(bookJson, BookCreateRequest.class);
+//
+//        // Use request only here
 //        BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
-        // This is where request is declared and initialized:
-        BookCreateRequest request = objectMapper.readValue(bookJson, BookCreateRequest.class);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
+//@PostMapping(value = "/create/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
+//@Operation(summary = "Add a new book with optional files",
+//        description = "Adds a new book with cover, PDF, and audio uploads. Each field is a separate multipart/form-data part.")
+//@ApiResponses(value = {
+//        @ApiResponse(responseCode = "201", description = "Book created successfully",
+//                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                        schema = @Schema(implementation = BookResponse.class))),
+//        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+//        @ApiResponse(responseCode = "404", description = "Category not found"),
+//        @ApiResponse(responseCode = "409", description = "Book with ISBN already exists")
+//})
+//public ResponseEntity<BookResponse> createBookWithFiles(
+//        @Parameter(description = "Category ID", required = true)
+//        @RequestPart("categoryId") Long categoryId,
+//        @Parameter(description = "Book name", required = true)
+//        @RequestPart("name") String name,
+//        @Parameter(description = "Author", required = true)
+//        @RequestPart("author") String author,
+//        @Parameter(description = "Short details/description")
+//        @RequestPart(value = "shortDetails", required = false) String shortDetails,
+//        @Parameter(description = "Total copies", required = true)
+//        @RequestPart("totalCopies") Integer totalCopies,
+//        @Parameter(description = "Available copies", required = true)
+//        @RequestPart("availableCopies") Integer availableCopies,
+//        @Parameter(description = "ISBN")
+//        @RequestPart(value = "isbn", required = false) String isbn,
+//        @Parameter(description = "Publication year")
+//        @RequestPart(value = "publicationYear", required = false) Integer publicationYear,
+//        @Parameter(description = "Book format (HARD_COPY, E_BOOK, AUDIO)")
+//        @RequestPart(value = "format", required = false) String format,
+//        @Parameter(description = "Book cover image file")
+//        @RequestPart(value = "bookCover", required = false) MultipartFile bookCover,
+//        @Parameter(description = "PDF file")
+//        @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile,
+//        @Parameter(description = "Audio file")
+//        @RequestPart(value = "audioFile", required = false) MultipartFile audioFile
+//) {
+//
+//    BookCreateRequest request = new BookCreateRequest();
+//    request.setCategoryId(categoryId);
+//    request.setName(name);
+//    request.setAuthor(author);
+//    request.setShortDetails(shortDetails);
+//    request.setTotalCopies(totalCopies);
+//    request.setAvailableCopies(availableCopies);
+//    request.setIsbn(isbn);
+//    request.setPublicationYear(publicationYear);
+//
+//    BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
+//    return new ResponseEntity<>(response, HttpStatus.CREATED);
+//}
 
-        // Use request only here
-        BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+@PostMapping(value = "/create/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+@Operation(summary = "Add a new book with optional files",
+        description = "Adds a new book with optional cover image, PDF, and audio files")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Book created successfully",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = @Schema(implementation = BookResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "404", description = "Category not found"),
+        @ApiResponse(responseCode = "409", description = "Book with ISBN already exists")
+})
+public ResponseEntity<BookResponse> createBookWithFiles(
+        @Parameter(description = "Book data in JSON format", required = true,
+                content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+        @RequestPart("bookData") @Valid String bookDataJson,
+        @Parameter(description = "Book cover image file (JPEG/PNG)")
+        @RequestPart(value = "bookCover", required = false) MultipartFile bookCover,
+        @Parameter(description = "PDF version of the book")
+        @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile,
+        @Parameter(description = "Audio version of the book")
+        @RequestPart(value = "audioFile", required = false) MultipartFile audioFile) throws IOException {
+
+    // Parse JSON to DTO
+    BookCreateRequest request = objectMapper.readValue(bookDataJson, BookCreateRequest.class);
+
+    // Set available copies if not provided
+    if (request.getAvailableCopies() == null) {
+        request.setAvailableCopies(request.getTotalCopies());
     }
+
+    // Process the request
+    BookResponse response = bookService.createBookWithFiles(request, bookCover, pdfFile, audioFile);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+}
 
     @PostMapping("/create")
     @Operation(summary = "Add a new book", description = "Adds a new book to the library (Admin only)")
@@ -110,7 +193,7 @@ public class BookController {
     public ResponseEntity<Page<BookResponse>> getAllBooks(
             @Parameter(description = "Category ID filter") @RequestParam(required = false) Long categoryId,
             @Parameter(description = "Availability filter") @RequestParam(required = false) Boolean available,
-            @Parameter(description = "Pagination parameters") Pageable pageable) {
+            @Parameter(hidden = true) Pageable pageable) {
         Page<BookResponse> response = bookService.getAllBooks(categoryId, available, pageable);
         return ResponseEntity.ok(response);
     }

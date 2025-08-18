@@ -36,6 +36,7 @@ public class BorrowController {
     })
     public ResponseEntity<BorrowResponse> borrowBook(
             @Valid @RequestBody BorrowCreateRequest request) {
+        System.out.println("Received request: " + request);
         BorrowResponse response = borrowService.borrowBook(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
