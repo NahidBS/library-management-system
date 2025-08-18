@@ -49,7 +49,7 @@ public class DonationRequestController {
     public ResponseEntity<Page<DonationRequestResponse>> getAllDonationRequests(
             @Parameter(description = "User ID filter") @RequestParam(required = false) Long userId,
             @Parameter(description = "Status filter") @RequestParam(required = false) String status,
-            @Parameter(description = "Pagination parameters") Pageable pageable) {
+            @Parameter(hidden = true) Pageable pageable) {
         Page<DonationRequestResponse> response = donationRequestService.getAllDonationRequests(userId, status, pageable);
         return ResponseEntity.ok(response);
     }

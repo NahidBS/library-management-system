@@ -49,7 +49,7 @@ public class BookingController {
             @Parameter(description = "User ID filter") @RequestParam(required = false) Long userId,
             @Parameter(description = "Book ID filter") @RequestParam(required = false) Long bookId,
             @Parameter(description = "Status filter") @RequestParam(required = false) String status,
-            @Parameter(description = "Pagination parameters") Pageable pageable) {
+            @Parameter(hidden = true) Pageable pageable) {
         Page<BookingResponse> response = bookingService.getAllBookings(userId, bookId, status, pageable);
         return ResponseEntity.ok(response);
     }
