@@ -34,7 +34,8 @@ public class ReviewController {
             @ApiResponse(responseCode = "409", description = "Review already exists for this user and book")
     })
     public ResponseEntity<ReviewResponse> createReview(
-            @Parameter(description = "Book ID") @PathVariable Long bookId,
+            @Parameter(description = "Book ID")
+            @PathVariable Long bookId,
             @Valid @RequestBody ReviewCreateRequest request) {
         ReviewResponse response = reviewService.createReview(bookId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

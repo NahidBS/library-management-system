@@ -1,5 +1,6 @@
 package com.library.management.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ public class ReviewCreateRequest {
     
     @NotNull(message = "User ID is required")
     @Schema(description = "ID of the user creating the review", example = "1")
+    @JsonProperty("userId")
     private Long userId;
     
     @NotNull(message = "Rating is required")
